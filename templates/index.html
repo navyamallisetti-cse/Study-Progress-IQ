@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>StudyProgressIQ | Learning Analytics</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head><body><header>
+    <h1>📚 StudyProgressIQ</h1>
+    <p>Learning Retention & Performance Analytics System</p>
+</header><div class="container"><!-- LEARNING DASHBOARD -->
+
+<section class="card">
+
+    <h2>📊 Learning Dashboard</h2>
+
+    <div class="stats">
+
+        <div class="stat-box">
+            <h3>{{ total_students }}</h3>
+            <p>Total Students</p>
+        </div>
+
+        <div class="stat-box">
+            <h3>{{ total_records }}</h3>
+            <p>Learning Records</p>
+        </div>
+
+        <div class="stat-box">
+            <h3>{{ avg_initial_score }}</h3>
+            <p>Average Initial Score</p>
+        </div>
+
+        <div class="stat-box">
+            <h3>{{ avg_later_score }}</h3>
+            <p>Average Later Score</p>
+        </div>
+
+        <div class="stat-box">
+            <h3>{{ avg_retention }}%</h3>
+            <p>Average Retention</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LEARNING ANALYSIS -->
+
+<section class="card">
+
+    <h2>🧠 Analyze Your Learning Pattern</h2>
+
+    <p>
+        Enter your learning details to understand your retention
+        pattern and receive personalized study recommendations.
+    </p>
+
+
+    <form action="{{ url_for('predict') }}" method="POST">
+
+        <label>Study Duration (minutes)</label>
+
+        <input
+            type="number"
+            name="study_duration"
+            placeholder="Enter study duration"
+            min="1"
+            required
+        >
+
+
+        <label>Available Study Time / Day (minutes)</label>
+
+        <input
+            type="number"
+            name="available_time"
+            placeholder="Enter available study time"
+            min="30"
+            required
+        >
+
+
+        <label>Difficulty Level (1–5)</label>
+
+        <input
+            type="number"
+            name="difficulty"
+            min="1"
+            max="5"
+            placeholder="Enter difficulty level"
+            required
+        >
+
+
+        <label>Study Method</label>
+
+        <select name="study_method" required>
+
+            <option value="">Select Study Method</option>
+
+            <option value="Reading">Reading</option>
+
+            <option value="Video">Video</option>
+
+            <option value="Practice">Practice</option>
+
+            <option value="Flashcards">Flashcards</option>
+
+            <option value="Mixed">Mixed</option>
+
+        </select>
+
+
+        <label>Initial Score</label>
+
+        <input
+            type="number"
+            name="initial_score"
+            min="0"
+            max="100"
+            placeholder="Enter initial score"
+            required
+        >
+
+
+        <label>Revision Count</label>
+
+        <input
+            type="number"
+            name="revision_count"
+            min="0"
+            placeholder="Enter number of revisions"
+            required
+        >
+
+
+        <label>Days Since Study</label>
+
+        <input
+            type="number"
+            name="days_since_study"
+            min="0"
+            placeholder="Enter days since study"
+            required
+        >
+
+
+        <label>Focus Level (1–5)</label>
+
+        <input
+            type="number"
+            name="focus_level"
+            min="1"
+            max="5"
+            placeholder="Enter focus level"
+            required
+        >
+
+
+        <label>Subject</label>
+
+        <select name="subject" required>
+
+            <option value="">Select Subject</option>
+
+            <option value="Python">Python</option>
+
+            <option value="C">C</option>
+
+            <option value="DBMS">DBMS</option>
+
+            <option value="Deep Learning">Deep Learning</option>
+
+            <option value="IoT">IoT</option>
+
+            <option value="Agile">Agile</option>
+
+        </select>
+
+
+        <label>Topic</label>
+
+        <input
+            type="text"
+            name="topic"
+            placeholder="Enter topic"
+            required
+        >
+
+
+        <button type="submit">
+            🔍 Analyze Learning Pattern
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- ANALYSIS RESULT -->
+
+{% if prediction %}
+
+<section class="card result">
+
+    <h2>🎯 StudyProgressIQ Analysis </h2>
+
+
+    <!-- RETENTION RISK -->
+
+    <div class="prediction-box">
+
+        <h3>Predicted Retention Risk</h3>
+
+        <div class="prediction">
+            {{ prediction }}
+        </div>
+
+    </div>
+
+
+    <!-- CONFIDENCE -->
+
+    <div class="result-item">
+
+        <h3>📈 Analysis Confidence</h3>
+
+        <p>
+            {{ confidence }}%
+        </p>
+
+    </div>
+
+
+    <!-- RECOMMENDATION -->
+
+    <div class="result-item">
+
+        <h3>💡 Recommendation</h3>
+
+        <p>
+            {{ recommendation }}
+        </p>
+
+    </div>
+
+
+    <!-- TOPIC INSIGHT -->
+
+    <div class="result-item">
+
+        <h3>🧠 Topic Insight</h3>
+
+        <p>
+            {{ topic_insight }}
+        </p>
+
+    </div>
+
+
+    <!-- ACTION PLAN -->
+
+    <div class="result-item">
+
+        <h3>✅ Personalized Action Plan</h3>
+
+        <ul>
+
+            {% for item in action_plan %}
+
+            <li>
+                {{ item }}
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+
+    <!-- DAILY TIMETABLE -->
+
+    <div class="result-item">
+
+        <h3>📅 Personalized Daily Timetable</h3>
+
+        <table>
+
+            <tr>
+
+                <th>Activity</th>
+
+                <th>Duration</th>
+
+                <th>Purpose</th>
+
+            </tr>
+
+
+            {% for item in timetable %}
+
+            <tr>
+
+                <td>
+                    {{ item.activity }}
+                </td>
+
+                <td>
+                    {{ item.duration }} min
+                </td>
+
+                <td>
+                    {{ item.description }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+
+    <!-- REVISION SCHEDULE -->
+
+    <div class="result-item">
+
+        <h3>🔄 Personalized Revision Schedule</h3>
+
+        <div class="revision-list">
+
+            {% for item in revision_schedule %}
+
+            <div class="revision-item">
+
+                <strong>
+                    {{ item.session }}
+                </strong>
+
+                <span>
+                    {{ item.date }}
+                </span>
+
+                <small>
+                    {{ item.day }}
+                </small>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+</div><footer><p>
+    StudyProgressIQ © 2026
+</p>
+
+<p>
+    Analyze → Predict → Take Action → Track Improvement
+</p>
+
+<p>
+    Built using Python, Flask, Pandas and Machine Learning
+</p>
+
+</footer></body></html>
